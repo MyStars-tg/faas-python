@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mystars-faas"
+description = "Official Python SDK for the MyStars FaaS API — buy Telegram Stars & Premium for any @username, paid in TON or USDT."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+keywords = ["telegram", "stars", "premium", "ton", "usdt", "mystars", "faas", "payments"]
+authors = [{ name = "MyStars.tg" }]
+dependencies = ["httpx>=0.27"]
+dynamic = ["version"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+fastapi = ["fastapi>=0.110"]
+flask = ["flask>=3.0"]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "respx>=0.21", "mypy>=1.11", "ruff>=0.6"]
+
+[project.scripts]
+mystars-faas = "mystars_faas.cli:main"
+
+[project.urls]
+Homepage = "https://mystars.tg"
+Documentation = "https://mystars.tg/docs"
+Source = "https://github.com/mystars-tg/faas-python"
+Issues = "https://github.com/mystars-tg/faas-python/issues"
+
+[tool.hatch.version]
+path = "mystars_faas/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mystars_faas"]
+
+[tool.hatch.build.targets.sdist]
+include = ["mystars_faas", "LICENSE", "README.md", "CHANGELOG.md", "pyproject.toml"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_ignores = false
+
+# fastapi / flask are OPTIONAL extras (the integration helpers import them
+# inside import-guarded functions). The base CI typecheck installs only [dev],
+# so don't require their stubs to be present.
+[[tool.mypy.overrides]]
+module = ["fastapi.*", "flask.*"]
+ignore_missing_imports = true

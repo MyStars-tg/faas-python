@@ -1,0 +1,34 @@
+{
+  "$comment": "Cross-language SSoT for on-chain invoice construction. BoC base64 values are produced by the dependency-free builders (ports of the verified reference builders) and verified to decode correctly with @ton/core. Every SDK must reproduce these byte-for-byte.",
+  "contract_version": "1.9.0",
+  "units": { "ton_decimals": 9, "usdt_decimals": 6 },
+  "conversions": [
+    { "amount": "1.2345", "currency": "ton", "smallest": "1234500000" },
+    { "amount": "0.05", "currency": "ton", "smallest": "50000000" },
+    { "amount": "4.99", "currency": "usdt_ton", "smallest": "4990000" },
+    { "amount": "1000000", "currency": "usdt_ton", "smallest": "1000000000000" }
+  ],
+  "ton_deeplink": [
+    {
+      "pay_to_address": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+      "amount": "1.5",
+      "memo": "3b488cdf-1f0a-4d3e-9a21-000000000000",
+      "deeplink": "ton://transfer/EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs?amount=1500000000&text=3b488cdf-1f0a-4d3e-9a21-000000000000"
+    }
+  ],
+  "comment_payload": [
+    {
+      "comment": "3b488cdf-1f0a-4d3e-9a21-000000000000",
+      "boc_base64": "te6cckEBAQEAKgAAUAAAAAAzYjQ4OGNkZi0xZjBhLTRkM2UtOWEyMS0wMDAwMDAwMDAwMDBMCUb7"
+    }
+  ],
+  "jetton_payload": [
+    {
+      "amount_micro": "4990000",
+      "destination": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+      "sender": "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
+      "memo": "3b488cdf-1f0a-4d3e-9a21-000000000000",
+      "boc_base64": "te6cckEBAgEAgAABpg+KfqUAAAAAAAAAADTCQwgBYidTKWoElCzjPtInJlHW6ysthxRL6yBRYo39m4bEO/0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQBQAAAAADNiNDg4Y2RmLTFmMGEtNGQzZS05YTIxLTAwMDAwMDAwMDAwMBFea4A="
+    }
+  ]
+}

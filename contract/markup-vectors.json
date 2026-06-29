@@ -1,0 +1,54 @@
+{
+  "$comment": "Cross-language SSoT for the retail-markup calculator. ceil_usd_to_cents mirrors the server's two-stage cent-ceil. retail_markup pins applyRetailMarkup outputs. Every SDK must reproduce these exactly.",
+  "contract_version": "1.9.0",
+  "ceil_usd_to_cents": [
+    { "usd": 0.06, "cents": 0.06 },
+    { "usd": 0.01, "cents": 0.01 },
+    { "usd": 3.3461, "cents": 3.35 },
+    { "usd": 5.625, "cents": 5.63 }
+  ],
+  "retail_markup": [
+    {
+      "name": "usdt pass-through fee, +20%",
+      "input": {
+        "amount": "5.56",
+        "currency": "usdt_ton",
+        "fee": { "subtotal": "5.00", "processing_fee": "0.56", "total": "5.56", "description": "1% swap + 0.5 GRAM gas", "currency": "usdt" }
+      },
+      "config": { "marginPct": 20, "passThroughProcessingFee": true },
+      "expected": { "goods": "5.00", "markup": "1.00", "subtotal": "6.00", "processingFee": "0.56", "total": "6.56", "profit": "1.00" }
+    },
+    {
+      "name": "usdt absorb fee, +20%",
+      "input": {
+        "amount": "5.56",
+        "currency": "usdt_ton",
+        "fee": { "subtotal": "5.00", "processing_fee": "0.56", "total": "5.56", "description": "1% swap + 0.5 GRAM gas", "currency": "usdt" }
+      },
+      "config": { "marginPct": 20, "passThroughProcessingFee": false },
+      "expected": { "goods": "5.00", "markup": "1.00", "subtotal": "6.00", "processingFee": "0.00", "total": "6.00", "profit": "0.44" }
+    },
+    {
+      "name": "usdt +12.5% triggers cent-ceil",
+      "input": {
+        "amount": "5.00",
+        "currency": "usdt_ton",
+        "fee": { "subtotal": "5.00", "processing_fee": "0.00", "total": "5.00", "description": "1% swap + 0.5 GRAM gas", "currency": "usdt" }
+      },
+      "config": { "marginPct": 12.5, "passThroughProcessingFee": true },
+      "expected": { "goods": "5.00", "markup": "0.63", "subtotal": "5.63", "processingFee": "0.00", "total": "5.63", "profit": "0.63" }
+    },
+    {
+      "name": "ton +10%",
+      "input": { "amount": "1.2345", "currency": "ton", "fee": null },
+      "config": { "marginPct": 10 },
+      "expected": { "goods": "1.2345", "markup": "0.1235", "subtotal": "1.358", "processingFee": "0", "total": "1.358", "profit": "0.1235" }
+    },
+    {
+      "name": "ton +0%",
+      "input": { "amount": "2.5", "currency": "ton", "fee": null },
+      "config": { "marginPct": 0 },
+      "expected": { "goods": "2.5", "markup": "0", "subtotal": "2.5", "processingFee": "0", "total": "2.5", "profit": "0" }
+    }
+  ]
+}

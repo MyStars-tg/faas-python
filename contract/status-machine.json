@@ -1,0 +1,31 @@
+{
+  "$comment": "Cross-language SSoT for the FaaS order status machine. Every SDK loads this in its tests so the terminal-status set is identical across languages.",
+  "contract_version": "1.9.0",
+  "statuses": [
+    "received",
+    "awaiting_payment",
+    "paid",
+    "reserved",
+    "swapping",
+    "funding",
+    "purchasing",
+    "fulfilling",
+    "completed",
+    "delivered",
+    "failed",
+    "reversed",
+    "expired",
+    "held",
+    "cancelled"
+  ],
+  "terminal": [
+    "delivered",
+    "failed",
+    "reversed",
+    "expired",
+    "cancelled"
+  ],
+  "initial_on_create": "awaiting_payment",
+  "cancellable_from": ["awaiting_payment"],
+  "webhook_terminal": ["delivered", "failed", "reversed", "expired"]
+}

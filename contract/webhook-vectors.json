@@ -1,0 +1,22 @@
+{
+  "$comment": "Cross-language SSoT for webhook signature verification. Signatures computed with the real server constants. Every SDK must verify these byte-for-byte.",
+  "contract_version": "1.9.0",
+  "algorithm": "HMAC-SHA256",
+  "encoding": "lowercase-hex",
+  "header": "X-Faas-Signature",
+  "cases": [
+    {
+      "name": "delivered",
+      "secret": "tenant-webhook-secret-aaaaaaaaaaaaaaaaaaaa",
+      "body": "{\"order_id\":\"order-123\",\"status\":\"delivered\"}",
+      "signature": "e56e9f643c8b3bc9b99253e4cee767528ec1cfc8866eec08a868638b0fbc8194"
+    }
+  ],
+  "rotation": {
+    "$comment": "During the 24h secret-rotation window the header carries both signatures, current first, comma-joined, no spaces. Verification with EITHER secret must pass.",
+    "secret": "tenant-webhook-secret-aaaaaaaaaaaaaaaaaaaa",
+    "previous_secret": "tenant-webhook-secret-PREVIOUS-bbbbbbbbbbbb",
+    "body": "{\"order_id\":\"order-123\",\"status\":\"delivered\"}",
+    "header": "e56e9f643c8b3bc9b99253e4cee767528ec1cfc8866eec08a868638b0fbc8194,6bb9ccf299a0f2201c0bfb578bac30a95aec9f2e3d6c536108f20793c194badf"
+  }
+}
