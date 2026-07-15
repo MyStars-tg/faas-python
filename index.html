@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MyStars FaaS — Python SDK for Telegram Stars &amp; Premium API</title>
+<meta name="description" content="Official Python SDK for the MyStars Fulfilment API (FaaS): deliver Telegram Stars and Premium to any @username, paid in GRAM (TON) or USDT. pip install mystars-faas.">
+<link rel="canonical" href="https://mystars-tg.github.io/faas-python/">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0A1628">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mystars-tg.github.io/faas-python/">
+<meta property="og:title" content="MyStars FaaS — Python SDK for Telegram Stars &amp; Premium API">
+<meta property="og:description" content="Fragment-as-a-Service for Python: create orders that deliver Telegram Stars and Premium to any @username, paid in GRAM (TON) or USDT.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MyStars FaaS — Python SDK for Telegram Stars &amp; Premium API">
+<meta name="twitter:description" content="Fragment-as-a-Service for Python. pip install mystars-faas.">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='120' height='120' rx='26' fill='%230A1628'/%3E%3Cg transform='translate(60 62)'%3E%3Cpolygon points='0,-36 8.3,-11.1 34.2,-11.1 13.2,4.2 21.2,29.1 0,13.5' fill='%23FFC84A'/%3E%3Cpolygon points='0,-36 -8.3,-11.1 -34.2,-11.1 -13.2,4.2 -21.2,29.1 0,13.5' fill='%23E8A526'/%3E%3C/g%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "MyStars FaaS Python SDK",
+  "alternateName": "mystars-faas",
+  "description": "Python SDK for the MyStars Fulfilment API: deliver Telegram Stars and Telegram Premium to any @username, paid in GRAM (TON) or USDT.",
+  "codeRepository": "https://github.com/MyStars-tg/faas-python",
+  "programmingLanguage": "Python",
+  "runtimePlatform": "Python 3.9+",
+  "license": "https://opensource.org/licenses/MIT",
+  "publisher": {
+    "@type": "Organization",
+    "name": "MyStars.tg",
+    "url": "https://mystars.tg"
+  }
+}
+</script>
+
+<style>
+:root {
+  --ms-ink:        #0A1628;
+  --ms-ink-2:      #0F1E33;
+  --ms-ink-3:      #16273F;
+  --ms-line:       #1F3252;
+  --ms-paper:      #F6F2E8;
+  --ms-paper-2:    #ECE5D3;
+  --ms-paper-line: #D9CFB4;
+  --ms-gold:       #FFC84A;
+  --ms-gold-deep:  #E8A526;
+  --ms-gold-soft:  #FFE9A8;
+  --ms-tg:         #3BA3EF;
+  --ms-tg-deep:    #1E7FC9;
+  --ms-tg-soft:    #9BD0F7;
+  --ms-mint:       #5BE0B3;
+  --ms-coral:      #FF7A59;
+  --ms-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --ms-text:    "Inter", ui-sans-serif, system-ui, sans-serif;
+  --ms-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--ms-text);
+  color: var(--ms-paper);
+  background-color: var(--ms-ink);
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: var(--ms-tg-soft); }
+.shell { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- nav ---------- */
+.nav {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 20px 0; border-bottom: 1px solid var(--ms-line);
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+.wordmark {
+  font-family: var(--ms-display); font-weight: 700; letter-spacing: -0.02em;
+  font-size: 20px; color: var(--ms-paper);
+}
+.wordmark .tg { color: var(--ms-gold); }
+.nav-links {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  font-family: var(--ms-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+}
+.nav-links a { color: var(--ms-paper); opacity: 0.7; text-decoration: none; }
+.nav-links a:hover { opacity: 1; }
+.nav-links a.hot { color: var(--ms-gold); opacity: 1; }
+
+/* ---------- hero ---------- */
+.hero { padding: 88px 0 64px; border-bottom: 1px solid var(--ms-line); }
+.eyebrow {
+  font-family: var(--ms-mono); font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ms-gold); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::after { content: ""; height: 1px; width: 64px; background: var(--ms-line); }
+h1 {
+  font-family: var(--ms-display); font-weight: 700; letter-spacing: -0.03em;
+  font-size: clamp(38px, 6vw, 64px); line-height: 1.02; margin: 0 0 22px;
+}
+h1 .gold { color: var(--ms-gold); }
+.lede { font-size: 17px; line-height: 1.6; max-width: 640px; opacity: 0.85; margin: 0 0 32px; }
+.lede a { color: var(--ms-tg-soft); text-decoration: underline; text-underline-offset: 3px; }
+.cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--ms-display); font-weight: 600; font-size: 15px;
+  padding: 13px 22px; border-radius: 10px; text-decoration: none;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-gold { background: var(--ms-gold); color: var(--ms-ink); box-shadow: 0 4px 0 var(--ms-gold-deep); }
+.btn-tg   { background: var(--ms-tg); color: #fff; box-shadow: 0 4px 0 var(--ms-tg-deep); }
+.btn-ghost { border: 1px solid var(--ms-line); color: var(--ms-paper); }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  font-family: var(--ms-mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.pill-mint { background: var(--ms-mint); color: var(--ms-ink); }
+.hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: center; }
+@media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+
+/* ---------- code ---------- */
+.code-card {
+  background: var(--ms-ink-2); border: 1px solid var(--ms-line); border-radius: 14px;
+  overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+}
+.code-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid var(--ms-line);
+  font-family: var(--ms-mono); font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; opacity: 0.75;
+}
+.code-head .dots { display: flex; gap: 6px; }
+.code-head .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--ms-line); display: block; }
+pre {
+  margin: 0; padding: 18px 20px; overflow-x: auto;
+  font-family: var(--ms-mono); font-size: 13px; line-height: 1.65; color: var(--ms-paper);
+}
+.tok-k { color: var(--ms-tg-soft); }      /* keyword */
+.tok-s { color: var(--ms-gold-soft); }    /* string */
+.tok-c { color: #7A8CA8; }                /* comment */
+.tok-f { color: var(--ms-mint); }         /* function */
+.tok-n { color: var(--ms-coral); }        /* number */
+.install {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--ms-mono); font-size: 13px;
+  background: var(--ms-ink-3); border: 1px solid var(--ms-line);
+  border-radius: 10px; padding: 10px 16px; margin-top: 18px;
+}
+.install .dollar { color: var(--ms-gold); }
+
+/* ---------- sections ---------- */
+section { padding: 64px 0; border-bottom: 1px solid var(--ms-line); }
+h2 {
+  font-family: var(--ms-display); font-weight: 600; letter-spacing: -0.025em;
+  font-size: clamp(26px, 4vw, 36px); line-height: 1.05; margin: 0 0 14px;
+}
+.section-head { margin-bottom: 36px; max-width: 640px; }
+.section-head p { margin: 0; opacity: 0.75; line-height: 1.6; font-size: 15px; }
+
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 860px) { .grid-3 { grid-template-columns: 1fr; } }
+.card {
+  background: var(--ms-ink-2); border: 1px solid var(--ms-line); border-radius: 14px;
+  padding: 22px;
+}
+.card .tag {
+  font-family: var(--ms-mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ms-gold); display: block; margin-bottom: 10px;
+}
+.card h3 { font-family: var(--ms-display); font-weight: 600; font-size: 18px; margin: 0 0 8px; }
+.card p { margin: 0; font-size: 14px; line-height: 1.6; opacity: 0.75; }
+.card code { font-family: var(--ms-mono); font-size: 12.5px; color: var(--ms-tg-soft); }
+
+/* steps */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 860px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+.step .num {
+  font-family: var(--ms-mono); font-size: 11px; letter-spacing: 0.2em;
+  color: var(--ms-gold); display: block; margin-bottom: 8px;
+}
+.step h3 { font-family: var(--ms-display); font-size: 16px; margin: 0 0 6px; }
+.step p { margin: 0; font-size: 13px; line-height: 1.55; opacity: 0.7; }
+
+/* product band */
+.band {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+@media (max-width: 860px) { .band { grid-template-columns: 1fr; } }
+.band-card {
+  border-radius: 16px; padding: 28px; border: 1px solid var(--ms-line);
+  background: linear-gradient(160deg, var(--ms-ink-3), var(--ms-ink-2));
+}
+.band-card h3 { font-family: var(--ms-display); font-size: 24px; margin: 0 0 10px; letter-spacing: -0.02em; }
+.band-card p { margin: 0 0 18px; font-size: 14.5px; line-height: 1.6; opacity: 0.8; }
+.band-card .btn { font-size: 14px; padding: 11px 18px; }
+.star-mini { vertical-align: -6px; margin-right: 8px; }
+
+/* footer */
+footer {
+  padding: 40px 0 56px;
+  font-family: var(--ms-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+footer .big {
+  font-family: var(--ms-display); font-size: 30px; font-weight: 600;
+  letter-spacing: -0.02em; text-transform: none; margin-bottom: 22px;
+}
+footer .big .tg { color: var(--ms-gold); }
+.foot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+@media (max-width: 860px) { .foot-grid { grid-template-columns: 1fr; } }
+.foot-grid b { display: block; margin-bottom: 12px; opacity: 0.5; font-weight: 500; }
+.foot-grid a { display: block; color: var(--ms-paper); opacity: 0.75; text-decoration: none; margin-bottom: 9px; }
+.foot-grid a:hover { opacity: 1; color: var(--ms-gold); }
+.legal { margin-top: 36px; opacity: 0.45; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a class="brand" href="https://mystars.tg" aria-label="mystars.tg home">
+      <svg viewBox="-60 -60 120 120" width="30" height="30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <polygon points="0,-52 12,-16 50,-16 19,6 31,42 0,20" fill="#FFC84A"/>
+        <polygon points="0,-52 -12,-16 -50,-16 -19,6 -31,42 0,20" fill="#E8A526"/>
+      </svg>
+      <span class="wordmark">mystars<span class="tg">.tg</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="https://github.com/MyStars-tg/faas-python">GitHub</a>
+      <a href="https://pypi.org/project/mystars-faas/">PyPI</a>
+      <a href="https://mystars.tg/docs">API Docs</a>
+      <a class="hot" href="https://mystars.tg">mystars.tg →</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">MyStars FaaS · Python SDK</div>
+        <h1>Telegram Stars <span class="gold">&amp;</span> Premium.<br>One <span class="gold">Python</span> call.</h1>
+        <p class="lede">
+          <strong>mystars-faas</strong> is the official Python client for the
+          <a href="https://mystars.tg/docs">MyStars Fulfilment API</a> — a Fragment-as-a-Service layer.
+          Create an order, get a payment address, and Stars or Premium land on any Telegram
+          <code>@username</code> in ~30 seconds. Paid in GRAM (TON) or USDT — no KYC, no cards.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-gold" href="https://github.com/MyStars-tg/faas-python">View on GitHub</a>
+          <a class="btn btn-ghost" href="https://mystars.tg/docs">API Reference</a>
+          <span class="pill pill-mint">No KYC</span>
+        </div>
+        <div class="install"><span class="dollar">$</span> pip install mystars-faas</div>
+      </div>
+
+      <div class="code-card">
+        <div class="code-head">
+          <span>quickstart.py</span>
+          <span class="dots"><i></i><i></i><i></i></span>
+        </div>
+        <pre><span class="tok-k">from</span> mystars_faas <span class="tok-k">import</span> Client
+
+client = <span class="tok-f">Client</span>(api_key=<span class="tok-s">"ms_live_…"</span>)
+
+<span class="tok-c"># 1 — quote the price (GRAM/TON or USDT)</span>
+quote = client.pricing.<span class="tok-f">get</span>(type=<span class="tok-s">"stars"</span>, quantity=<span class="tok-n">500</span>)
+
+<span class="tok-c"># 2 — check the recipient resolves</span>
+client.recipients.<span class="tok-f">check</span>(type=<span class="tok-s">"stars"</span>,
+    recipient={<span class="tok-s">"username"</span>: <span class="tok-s">"@friend"</span>})
+
+<span class="tok-c"># 3 — create the order & pay on-chain</span>
+order = client.orders.<span class="tok-f">create</span>(
+    type=<span class="tok-s">"stars"</span>, quantity=<span class="tok-n">500</span>,
+    recipient={<span class="tok-s">"username"</span>: <span class="tok-s">"@friend"</span>},
+    payment_currency=<span class="tok-s">"ton"</span>,
+    callback_url=<span class="tok-s">"https://your.app/webhook"</span>)
+
+<span class="tok-f">print</span>(order.payment.address)  <span class="tok-c"># → delivered in ~30 s</span></pre>
+      </div>
+    </div>
+  </header>
+
+  <!-- FEATURES -->
+  <section>
+    <div class="section-head">
+      <h2>Everything the fulfilment rail does, typed.</h2>
+      <p>The SDK wraps the full public API surface — pricing, recipient checks, orders, products, webhooks — with idempotency and signature verification built in.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <span class="tag">Pricing</span>
+        <h3>Live quotes</h3>
+        <p><code>GET /v1/pricing</code> returns the all-in amount with quote freshness (<code>quoted_at</code>, <code>valid_until</code>) and the live USDT/TON rate. USDT quotes itemise the ~1% swap fee.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Safety</span>
+        <h3>Recipient checks</h3>
+        <p><code>POST /v1/recipients/check</code> resolves the @username before you pay — including the <code>already_subscribed</code> guard for Premium gifts.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Orders</span>
+        <h3>Self-describing orders</h3>
+        <p>Stars (50 – 1,000,000) or Premium (3/6/12 months). One-hour payment window; <code>expires_at</code> is the single source of truth.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Webhooks</span>
+        <h3>Terminal events</h3>
+        <p><code>delivered</code>, <code>reversed</code>, <code>failed</code>, <code>expired</code> — signed callbacks with verification helpers in the SDK.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Reversals</span>
+        <h3>Auto-refund on-chain</h3>
+        <p>Wrong amount, wrong memo, unresolvable handle — the payment reverses to the sending wallet automatically. <code>reversal_tx</code> carries the receipt.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Limits</span>
+        <h3>Documented budgets</h3>
+        <p>Per-minute request budget with <code>RateLimit-*</code> / <code>Retry-After</code> headers; pricing &amp; recipient probes capped at 30 req/min.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section>
+    <div class="section-head">
+      <h2>Quote → check → order → webhook.</h2>
+      <p>The recommended call order, straight from the API reference.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="num">01</span><h3>Quote</h3><p>Pull the live all-in price for Stars or Premium in GRAM (TON) or USDT.</p></div>
+      <div class="step"><span class="num">02</span><h3>Check</h3><p>Resolve the recipient @username so the order can't 422 on delivery.</p></div>
+      <div class="step"><span class="num">03</span><h3>Order &amp; pay</h3><p>Create the order, send the exact on-chain amount with the memo provided.</p></div>
+      <div class="step"><span class="num">04</span><h3>Delivered</h3><p>Webhook fires in ~30 s. If anything's off, funds auto-reverse on-chain.</p></div>
+    </div>
+  </section>
+
+  <!-- PRODUCT BAND -->
+  <section>
+    <div class="section-head">
+      <h2>Same rails the storefront runs on.</h2>
+      <p>The SDK talks to the exact infrastructure behind mystars.tg — 2.4M+ Stars shipped, 99.9% uptime, every order verifiable on-chain.</p>
+    </div>
+    <div class="band">
+      <div class="band-card">
+        <h3><svg class="star-mini" viewBox="-60 -60 120 120" width="22" height="22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polygon points="0,-52 12,-16 50,-16 19,6 31,42 0,20" fill="#FFC84A"/><polygon points="0,-52 -12,-16 -50,-16 -19,6 -31,42 0,20" fill="#E8A526"/></svg>Telegram Stars</h3>
+        <p>Try the consumer flow your users will feel: <a href="https://mystars.tg">buy Telegram Stars with crypto</a> on mystars.tg — up to 40% cheaper than in-app, no signup, no ID, delivery in ~30 seconds.</p>
+        <a class="btn btn-gold" href="https://mystars.tg">Buy Stars on mystars.tg</a>
+      </div>
+      <div class="band-card">
+        <h3>⚡ Telegram Premium</h3>
+        <p>Gift <a href="https://mystars.tg/premium">Telegram Premium</a> to any @handle — 3, 6, or 12 months, paid in GRAM or USDT. The recipient needs no wallet and no setup.</p>
+        <a class="btn btn-tg" href="https://mystars.tg/premium">Get Premium →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="big">mystars<span class="tg">.tg</span> — FaaS SDK</div>
+    <div class="foot-grid">
+      <div>
+        <b>SDK</b>
+        <a href="https://github.com/MyStars-tg/faas-python">faas-python on GitHub</a>
+        <a href="https://pypi.org/project/mystars-faas/">mystars-faas on PyPI</a>
+        <a href="https://www.npmjs.com/package/@mystars-tg/faas-sdk">TypeScript SDK (npm)</a>
+      </div>
+      <div>
+        <b>Product</b>
+        <a href="https://mystars.tg">Buy Telegram Stars</a>
+        <a href="https://mystars.tg/premium">Telegram Premium</a>
+        <a href="https://mystars.tg/docs">API Documentation</a>
+      </div>
+      <div>
+        <b>Telegram</b>
+        <a href="https://t.me/my_stars_tg_bot">@my_stars_tg_bot</a>
+        <a href="https://t.me/mystarstg_official">Community</a>
+        <a href="https://t.me/Mystars_support_bot">Support</a>
+      </div>
+    </div>
+    <div class="legal">© 2026 mystars.tg · Stars &amp; Premium · GRAM · No KYC · MIT-licensed SDK</div>
+  </footer>
+
+</div>
+
+</body>
+</html>
