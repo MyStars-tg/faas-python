@@ -1,0 +1,67 @@
+{
+  "$comment": "Cross-language SSoT for the FaaS order status machine. Every SDK loads this in its tests so the terminal-status set is identical across languages.",
+  "contract_version": "2.0.0",
+  "statuses": [
+    "received",
+    "awaiting_payment",
+    "paid",
+    "reserved",
+    "swapping",
+    "funding",
+    "purchasing",
+    "fulfilling",
+    "completed",
+    "delivered",
+    "failed",
+    "reversed",
+    "expired",
+    "held",
+    "cancelled"
+  ],
+  "terminal": [
+    "delivered",
+    "failed",
+    "reversed",
+    "expired",
+    "cancelled"
+  ],
+  "initial_on_create": "awaiting_payment",
+  "cancellable_from": [
+    "awaiting_payment"
+  ],
+  "webhook_terminal": [
+    "delivered",
+    "failed",
+    "reversed",
+    "expired"
+  ],
+  "failure_reasons": {
+    "$comment": "Every `failure_reason` a tenant can receive on GET /v1/orders/:id or a webhook, and what it says about their money. The `held` values mean the order has not finished; only `reversal_unsettled` means the tenant does NOT have their money back. Internal reasons are mapped to these at the API edge, so this list is exhaustive for the wire.",
+    "terminal": [
+      "underpaid",
+      "overpaid",
+      "no_memo",
+      "wrong_memo",
+      "wrong_currency",
+      "undeliverable",
+      "expired"
+    ],
+    "held": [
+      "fulfilment_retrying",
+      "recipient_unreachable",
+      "reversal_pending",
+      "reversal_unsettled"
+    ],
+    "funds_returned_to_tenant": [
+      "underpaid",
+      "overpaid",
+      "no_memo",
+      "wrong_memo",
+      "wrong_currency",
+      "undeliverable"
+    ],
+    "funds_not_returned_to_tenant": [
+      "reversal_unsettled"
+    ]
+  }
+}
