@@ -1,0 +1,65 @@
+{
+  "$comment": "Cross-language SSoT for a recurring giveaway series (POST /v1/giveaways/series). Statuses, the terminal set and the transitions; why a series pauses; the schedule intervals and on_unfunded policies; and the series.* webhook event types. Each occurrence is an ordinary giveaway with its own machine. Unknown future values must be tolerated, never rejected.",
+  "contract_version": "2.3.0",
+  "statuses": [
+    "active",
+    "paused",
+    "cancelled",
+    "completed"
+  ],
+  "terminal": [
+    "cancelled",
+    "completed"
+  ],
+  "initial_on_create": "active",
+  "transitions": {
+    "active": [
+      "paused",
+      "cancelled",
+      "completed"
+    ],
+    "paused": [
+      "active",
+      "cancelled",
+      "completed"
+    ],
+    "cancelled": [],
+    "completed": []
+  },
+  "pausable_from": [
+    "active"
+  ],
+  "resumable_from": [
+    "paused"
+  ],
+  "cancellable_from": [
+    "active",
+    "paused"
+  ],
+  "paused_reasons": [
+    "requested",
+    "spawn_failures",
+    "lost_admin",
+    "unfunded"
+  ],
+  "intervals": [
+    "day",
+    "week",
+    "month"
+  ],
+  "on_unfunded": [
+    "skip",
+    "pause"
+  ],
+  "limits": {
+    "max_occurrences": 52,
+    "max_span": "P1Y"
+  },
+  "events": [
+    "series.occurrence_created",
+    "series.paused",
+    "series.resumed",
+    "series.cancelled",
+    "series.completed"
+  ]
+}

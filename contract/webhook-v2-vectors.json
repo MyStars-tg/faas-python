@@ -1,0 +1,182 @@
+{
+  "$comment": "Cross-language SSoT for webhook signature V2 (X-Faas-Signature-V2). `cases` are the server's signing vectors, computed independently (Python hmac/hashlib): every header a delivery carries for a given secret, unix timestamp and raw body. Bodies are opaque UTF-8 bytes; verify over them exactly. `verification` is what a receiver must decide for (secret, raw body, header, now): accept when some v1 equals HMAC-SHA256(secret, \"<t>.<body>\") and |now - t| <= tolerance_sec. Every SDK must reproduce both sections.",
+  "contract_version": "2.3.0",
+  "algorithm": "HMAC-SHA256",
+  "encoding": "lowercase-hex",
+  "header": "X-Faas-Signature-V2",
+  "format": "t=<unix seconds>,v1=<hex hmac_sha256(secret, \"<t>.<raw body>\")>[,v1=<same, previous secret during a rotation>]",
+  "tolerance_sec": 300,
+  "cases": [
+    {
+      "name": "order_delivered",
+      "secret": "whsec_vector_one",
+      "timestamp": 1767225600,
+      "event_id": "0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40",
+      "event_type": "order.delivered",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "expected_headers": {
+        "X-Faas-Signature": "bbd8c7cc5cf05acb6254f22f7ff28243361af9d0480f789718b44a1cbe154a3d",
+        "X-Faas-Signature-V2": "t=1767225600,v1=e1f32ca4e1313c2f4f319d7d7499fcf5ac41714d2a995aa06f066b6607c47e65",
+        "X-Faas-Event-Id": "0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40",
+        "X-Faas-Event-Type": "order.delivered"
+      }
+    },
+    {
+      "name": "envelope_campaign_paid",
+      "secret": "whsec_vector_two",
+      "timestamp": 1767225659,
+      "event_id": "7a1e2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b",
+      "event_type": "campaign.paid",
+      "body": "{\"id\":\"7a1e2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b\",\"type\":\"campaign.paid\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"api_version\":\"2.3.0\",\"sequence\":3,\"data\":{\"campaign_id\":\"c0ffee00-1111-4222-8333-444455556666\",\"amount\":\"12.5\",\"currency\":\"ton\"}}",
+      "expected_headers": {
+        "X-Faas-Signature": "4b4509fa714e54722fdfb1897e1cc8c6f9af607c404fd7ee0a0e57eaf163608b",
+        "X-Faas-Signature-V2": "t=1767225659,v1=c54be7ef1520a7df2227cc8d6c810338ab0ea85f637549770fb6a575c305bfee",
+        "X-Faas-Event-Id": "7a1e2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b",
+        "X-Faas-Event-Type": "campaign.paid"
+      }
+    },
+    {
+      "name": "rotation_dual_signed",
+      "secret": "whsec_current",
+      "previous_secret": "whsec_previous",
+      "timestamp": 1767229200,
+      "event_id": "0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40",
+      "event_type": "order.delivered",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "expected_headers": {
+        "X-Faas-Signature": "7e698813c380d431626e0de145dd30362dbaa82866ea54ea60530171ce42fab0,3c7874f92f83dfd3fd6636dd47293fab5decc8fa3a240d15a6239557d76864bd",
+        "X-Faas-Signature-V2": "t=1767229200,v1=3d04d3084ec2ddb717a79c267f8330a9ecae0b02411213a73eca02213b23533d,v1=6d46b3ed642be6d5cfcb3e25365e143b0183e9fff7743532acdeee1f962028fe",
+        "X-Faas-Event-Id": "0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40",
+        "X-Faas-Event-Type": "order.delivered"
+      }
+    },
+    {
+      "name": "utf8_body",
+      "secret": "whsec_vector_ünïcode",
+      "timestamp": 1767225601,
+      "event_id": "9e8d7c6b-5a49-4382-9716-05f4e3d2c1b0",
+      "event_type": "campaign.recipient.failed",
+      "body": "{\"id\":\"9e8d7c6b-5a49-4382-9716-05f4e3d2c1b0\",\"type\":\"campaign.recipient.failed\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"api_version\":\"2.3.0\",\"data\":{\"username\":\"durov\",\"reason\":\"message_refused\",\"note\":\"Привет ⭐\"}}",
+      "expected_headers": {
+        "X-Faas-Signature": "f65035fd3e35f5978019f71f33b3d1b02607999587f1b921146d8d9855da4017",
+        "X-Faas-Signature-V2": "t=1767225601,v1=b95129265540650119a148732d9c236d1bf0f655ae1478d9cb061f259e583113",
+        "X-Faas-Event-Id": "9e8d7c6b-5a49-4382-9716-05f4e3d2c1b0",
+        "X-Faas-Event-Type": "campaign.recipient.failed"
+      }
+    }
+  ],
+  "verification": [
+    {
+      "name": "within_tolerance_exact",
+      "secret": "whsec_vector_one",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "t=1767225600,v1=e1f32ca4e1313c2f4f319d7d7499fcf5ac41714d2a995aa06f066b6607c47e65",
+      "now": 1767225600,
+      "valid": true
+    },
+    {
+      "name": "tolerance_edge_late_300s",
+      "secret": "whsec_vector_one",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "t=1767225600,v1=e1f32ca4e1313c2f4f319d7d7499fcf5ac41714d2a995aa06f066b6607c47e65",
+      "now": 1767225900,
+      "valid": true
+    },
+    {
+      "name": "tolerance_edge_early_300s",
+      "secret": "whsec_vector_one",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "t=1767225600,v1=e1f32ca4e1313c2f4f319d7d7499fcf5ac41714d2a995aa06f066b6607c47e65",
+      "now": 1767225300,
+      "valid": true
+    },
+    {
+      "name": "stale_301s",
+      "secret": "whsec_vector_one",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "t=1767225600,v1=e1f32ca4e1313c2f4f319d7d7499fcf5ac41714d2a995aa06f066b6607c47e65",
+      "now": 1767225901,
+      "valid": false
+    },
+    {
+      "name": "future_301s",
+      "secret": "whsec_vector_one",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "t=1767225600,v1=e1f32ca4e1313c2f4f319d7d7499fcf5ac41714d2a995aa06f066b6607c47e65",
+      "now": 1767225299,
+      "valid": false
+    },
+    {
+      "name": "envelope_valid",
+      "secret": "whsec_vector_two",
+      "body": "{\"id\":\"7a1e2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b\",\"type\":\"campaign.paid\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"api_version\":\"2.3.0\",\"sequence\":3,\"data\":{\"campaign_id\":\"c0ffee00-1111-4222-8333-444455556666\",\"amount\":\"12.5\",\"currency\":\"ton\"}}",
+      "header": "t=1767225659,v1=c54be7ef1520a7df2227cc8d6c810338ab0ea85f637549770fb6a575c305bfee",
+      "now": 1767225664,
+      "valid": true
+    },
+    {
+      "name": "tampered_body",
+      "secret": "whsec_vector_two",
+      "body": "{\"id\":\"7a1e2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b\",\"type\":\"campaign.paid\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"api_version\":\"2.3.0\",\"sequence\":3,\"data\":{\"campaign_id\":\"c0ffee00-1111-4222-8333-444455556666\",\"amount\":\"125\",\"currency\":\"ton\"}}",
+      "header": "t=1767225659,v1=c54be7ef1520a7df2227cc8d6c810338ab0ea85f637549770fb6a575c305bfee",
+      "now": 1767225659,
+      "valid": false
+    },
+    {
+      "name": "wrong_secret",
+      "secret": "whsec_not_the_secret",
+      "body": "{\"id\":\"7a1e2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b\",\"type\":\"campaign.paid\",\"created_at\":\"2026-01-01T00:00:00.000Z\",\"api_version\":\"2.3.0\",\"sequence\":3,\"data\":{\"campaign_id\":\"c0ffee00-1111-4222-8333-444455556666\",\"amount\":\"12.5\",\"currency\":\"ton\"}}",
+      "header": "t=1767225659,v1=c54be7ef1520a7df2227cc8d6c810338ab0ea85f637549770fb6a575c305bfee",
+      "now": 1767225659,
+      "valid": false
+    },
+    {
+      "name": "rotation_current_secret",
+      "secret": "whsec_current",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "t=1767229200,v1=3d04d3084ec2ddb717a79c267f8330a9ecae0b02411213a73eca02213b23533d,v1=6d46b3ed642be6d5cfcb3e25365e143b0183e9fff7743532acdeee1f962028fe",
+      "now": 1767229200,
+      "valid": true
+    },
+    {
+      "name": "rotation_previous_secret",
+      "secret": "whsec_previous",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "t=1767229200,v1=3d04d3084ec2ddb717a79c267f8330a9ecae0b02411213a73eca02213b23533d,v1=6d46b3ed642be6d5cfcb3e25365e143b0183e9fff7743532acdeee1f962028fe",
+      "now": 1767229200,
+      "valid": true
+    },
+    {
+      "name": "timestamp_swapped_without_resigning",
+      "secret": "whsec_vector_one",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "t=1767225660,v1=e1f32ca4e1313c2f4f319d7d7499fcf5ac41714d2a995aa06f066b6607c47e65",
+      "now": 1767225660,
+      "valid": false
+    },
+    {
+      "name": "missing_v1",
+      "secret": "whsec_vector_one",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "t=1767225600",
+      "now": 1767225600,
+      "valid": false
+    },
+    {
+      "name": "missing_t",
+      "secret": "whsec_vector_one",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "v1=e1f32ca4e1313c2f4f319d7d7499fcf5ac41714d2a995aa06f066b6607c47e65",
+      "now": 1767225600,
+      "valid": false
+    },
+    {
+      "name": "empty_header",
+      "secret": "whsec_vector_one",
+      "body": "{\"order_id\":\"5f0c6c2e-8d1a-4c3b-9e2f-1a2b3c4d5e6f\",\"status\":\"delivered\",\"purchase_tx\":\"te6cckEBAQEAAgAAAEysuc0=\",\"id\":\"0b9d7f3e-2c4a-4e8b-9f61-7d2e5a1c3b40\",\"type\":\"order.delivered\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}",
+      "header": "",
+      "now": 1767225600,
+      "valid": false
+    }
+  ]
+}

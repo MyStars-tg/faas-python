@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: API reference & docs
+    url: https://mystars.tg/docs
+    about: The interactive OpenAPI portal + SDK guides.
+  - name: Get an API key / support
+    url: https://t.me/my_stars_tg_bot
+    about: Issue an API key (→ API access) or reach support. Report security issues here privately, never as a public issue.

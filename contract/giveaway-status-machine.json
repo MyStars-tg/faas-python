@@ -1,0 +1,113 @@
+{
+  "$comment": "Cross-language SSoT for a partner giveaway (POST /v1/giveaways). Statuses, the terminal set and the transitions; the public winner delivery states, entrant statuses and filter reasons, the reasons a giveaway.cancelled event carries, the reversal row states and kinds; and the giveaway.* webhook event types (giveaway.entries only for a giveaway created with entries_events: true). Unknown future values must be tolerated, never rejected.",
+  "contract_version": "2.3.0",
+  "statuses": [
+    "draft",
+    "awaiting_funding",
+    "open",
+    "closed",
+    "drawn",
+    "settling",
+    "settled",
+    "cancelled"
+  ],
+  "terminal": [
+    "settled",
+    "cancelled"
+  ],
+  "initial_on_create": "draft",
+  "transitions": {
+    "draft": [
+      "awaiting_funding",
+      "open",
+      "cancelled"
+    ],
+    "awaiting_funding": [
+      "open",
+      "cancelled"
+    ],
+    "open": [
+      "closed"
+    ],
+    "closed": [
+      "drawn"
+    ],
+    "drawn": [
+      "settling"
+    ],
+    "settling": [
+      "settled"
+    ],
+    "settled": [],
+    "cancelled": []
+  },
+  "fundable_from": [
+    "draft",
+    "awaiting_funding"
+  ],
+  "cancellable_from": [
+    "draft",
+    "awaiting_funding"
+  ],
+  "closable_from": [
+    "open"
+  ],
+  "attestable_from": [
+    "draft",
+    "awaiting_funding",
+    "open"
+  ],
+  "prize_types": [
+    "stars",
+    "premium",
+    "gift"
+  ],
+  "delivery_statuses": [
+    "in_progress",
+    "delivered",
+    "failed",
+    "manual_review"
+  ],
+  "entrant_statuses": [
+    "eligible",
+    "filtered",
+    "withdrawn"
+  ],
+  "filter_reasons": [
+    "score",
+    "conditions",
+    "gift_unreachable"
+  ],
+  "cancel_reasons": [
+    "cancelled",
+    "draft_expired",
+    "funding_expired"
+  ],
+  "reversal_statuses": [
+    "pending_approval",
+    "approved",
+    "sending",
+    "sent",
+    "skipped",
+    "cancelled",
+    "manual"
+  ],
+  "reversal_kinds": [
+    "unused_slots",
+    "unconverted_surcharge"
+  ],
+  "events": [
+    "giveaway.awaiting_funding",
+    "giveaway.opened",
+    "giveaway.entries",
+    "giveaway.closed",
+    "giveaway.drawn",
+    "giveaway.delivery_updated",
+    "giveaway.settled",
+    "giveaway.cancelled",
+    "giveaway.reversal_resolved"
+  ],
+  "opt_in_events": [
+    "giveaway.entries"
+  ]
+}

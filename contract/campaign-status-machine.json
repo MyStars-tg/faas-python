@@ -1,0 +1,167 @@
+{
+  "$comment": "Cross-language SSoT for a partner outreach campaign (POST /v1/campaigns). Statuses, the terminal set and every transition the server makes; which statuses accept cancel / pause / resume; the per-recipient verdicts, delivery statuses and reason taxonomies; and the campaign.* webhook event types (opt-in ones listed separately \u2014 they are sent only when your webhook endpoint subscribes to them). Unknown future values must be tolerated, never rejected.",
+  "contract_version": "2.3.0",
+  "statuses": [
+    "draft",
+    "awaiting_payment",
+    "paid",
+    "running",
+    "paused",
+    "cancelling",
+    "settling",
+    "awaiting_approval",
+    "completed",
+    "cancelled",
+    "expired",
+    "failed"
+  ],
+  "terminal": [
+    "completed",
+    "cancelled",
+    "expired",
+    "failed"
+  ],
+  "initial_on_create": "draft",
+  "transitions": {
+    "draft": [
+      "awaiting_payment",
+      "cancelled",
+      "expired"
+    ],
+    "awaiting_payment": [
+      "paid",
+      "settling",
+      "cancelled",
+      "expired"
+    ],
+    "paid": [
+      "running",
+      "paused",
+      "cancelling"
+    ],
+    "running": [
+      "paused",
+      "cancelling",
+      "settling"
+    ],
+    "paused": [
+      "running",
+      "cancelling"
+    ],
+    "cancelling": [
+      "settling"
+    ],
+    "settling": [
+      "awaiting_approval",
+      "completed",
+      "cancelled",
+      "failed"
+    ],
+    "awaiting_approval": [
+      "settling",
+      "completed",
+      "cancelled",
+      "failed"
+    ],
+    "completed": [],
+    "cancelled": [],
+    "expired": [],
+    "failed": []
+  },
+  "payable": [
+    "awaiting_payment"
+  ],
+  "cancellable_from": [
+    "draft",
+    "awaiting_payment",
+    "paid",
+    "running",
+    "paused"
+  ],
+  "pausable_from": [
+    "paid",
+    "running"
+  ],
+  "resumable_from": [
+    "paused"
+  ],
+  "pause_reasons": [
+    "tenant",
+    "cost_guard"
+  ],
+  "validation_verdicts": [
+    "pending",
+    "ok",
+    "unverified",
+    "rejected"
+  ],
+  "billed_verdicts": [
+    "ok",
+    "unverified"
+  ],
+  "delivery_statuses": [
+    "pending",
+    "excluded",
+    "queued",
+    "delivered",
+    "failed",
+    "skipped"
+  ],
+  "validation_reasons": [
+    "invalid_format",
+    "duplicate",
+    "duplicate_active_campaign",
+    "opted_out",
+    "recipient_frequency_capped",
+    "not_found",
+    "not_a_user",
+    "bot",
+    "ineligible",
+    "already_subscribed",
+    "gifts_disallowed",
+    "limited_gifts_disallowed",
+    "unlimited_gifts_disallowed",
+    "unverified"
+  ],
+  "delivery_reasons": [
+    "privacy_restricted",
+    "recipient_unreachable",
+    "gift_sold_out",
+    "message_refused",
+    "message_suppressed",
+    "campaign_cancelled",
+    "internal_error",
+    "insufficient_payment",
+    "duplicate_active_campaign",
+    "recipient_frequency_capped",
+    "not_found",
+    "not_a_user",
+    "bot",
+    "ineligible",
+    "already_subscribed",
+    "opted_out",
+    "gifts_disallowed",
+    "limited_gifts_disallowed",
+    "unlimited_gifts_disallowed"
+  ],
+  "delivered_with_reason": [
+    "message_refused",
+    "message_suppressed"
+  ],
+  "events": [
+    "campaign.validated",
+    "campaign.paid",
+    "campaign.progress",
+    "campaign.paused",
+    "campaign.completed",
+    "campaign.cancelled",
+    "campaign.expired",
+    "campaign.failed",
+    "campaign.recipient.delivered",
+    "campaign.recipient.failed"
+  ],
+  "opt_in_events": [
+    "campaign.recipient.delivered",
+    "campaign.recipient.failed"
+  ]
+}
